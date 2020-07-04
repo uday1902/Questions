@@ -2,10 +2,8 @@ package src.main.java.backtracking;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class EightQueens {
 
@@ -18,10 +16,10 @@ public class EightQueens {
         }
     }
 
-    private int  numOfSolutions =0;
+    private int numOfSolutions = 0;
     private int noOfFunctionCalls = 0;
 
-    public List<List<Position>> eightQueens(int count) {
+    public List<List<String>> nQueens(int count) {
         numOfSolutions =0;
         noOfFunctionCalls = 0;
         List<List<Position>> solutions = new ArrayList<>();
@@ -30,60 +28,28 @@ public class EightQueens {
         for(int i = 0; i< count ;i++) {
             remainingRows.add(i);
         }
-        //placeQueens(currentPositions, solutions, remainingRows, count);
-        placeQueens2(currentPositions, solutions, 0,count);
-        return solutions;
+        placeQueens(currentPositions, solutions, 0,count);
+        return convertToMatrix(solutions, count);
     }
 
-    private void placeQueens2(List<Position> currentPositions, List<List<Position>> solutions,int row,int count) {
-                noOfFunctionCalls++;
-                if(row == count) {
-                    numOfSolutions++;
-                    solutions.add(new ArrayList<>(currentPositions));
-                } else {
-                    for(int i = 0; i < count; i++) {
-                        if(isConflict(currentPositions, row,i)){
-                            continue;
-                        }
-                        Position position = new Position(row, i);
-                        currentPositions.add(position);
-                        placeQueens2(currentPositions,solutions, row+1, count);
-                        currentPositions.remove(currentPositions.size() -1);
-                    }
+    private void placeQueens(List<Position> currentPositions, List<List<Position>> solutions,int row,int count) {
+        noOfFunctionCalls++;
+        if(row == count) {
+            numOfSolutions++;
+            solutions.add(new ArrayList<>(currentPositions));
+        } else {
+            for(int i = 0; i < count; i++) {
+                if(isConflict(currentPositions, row,i)){
+                    continue;
                 }
+                Position position = new Position(row, i);
+                currentPositions.add(position);
+                placeQueens(currentPositions,solutions, row+1, count);
+                currentPositions.remove(currentPositions.size() -1);
+            }
+        }
 
     }
-
-//    private void placeQueens(List<Position> currentPositions, List<List<Position>> solutions, Set<Integer> remainingRows, int count) {
-//        noOfFunctionCalls++;
-//        if(remainingRows.isEmpty()) {
-//            List<Position> aSolution = new ArrayList<>(currentPositions);
-//            System.out.print("Sol -> ");
-//            aSolution.stream().forEach(e -> System.out.print("("+ e.x+","+e.y+") " ));
-//            solutions.add(aSolution);
-//            numOfSolutions++;
-//            System.out.print("\nFunctionCalls so far -> " + noOfFunctionCalls);
-//            System.out.println(" Solutions so far -> " + numOfSolutions);
-//        } else {
-//            //solutions.add();
-//            for(int i=0;i < count; i++) {
-//                if(!remainingRows.contains(i)){
-//                    continue;
-//                }
-//                for(int j=0;j < count; j++) {
-//                    if(isConflict(currentPositions, i,j)){
-//                        continue;
-//                    }
-//                    Position position = new Position(i, j);
-//                    currentPositions.add(position);
-//                    remainingRows.remove(i);
-//                    placeQueens(currentPositions, solutions, remainingRows, count);
-//                    remainingRows.add(i);
-//                    currentPositions.remove(position);
-//                }
-//            }
-//        }
-//    }
 
     private boolean isConflict(List<Position> currentPositions, int x, int y) {
         for(Position pos: currentPositions) {
@@ -102,14 +68,39 @@ public class EightQueens {
         return x1==x2 || y1==y2;
     }
 
+    private List<List<String>> convertToMatrix(List<List<Position>> solutionList, int count) {
+
+        List<List<String>> result = new ArrayList<>();
+        for(List<Position> solution: solutionList) {
+            List<String> sol = new ArrayList<>();
+            for(Position p: solution) {
+                 sol.add(p.x, addQueen(count, p.y));
+            }
+            result.add(sol);
+        }
+        return result;
+    }
+
+    private String addQueen(int count, int index) {
+        return addDots(index) + "Q" + addDots(count - index -1);
+    }
+
+    private String addDots(int count) {
+        StringBuilder row= new StringBuilder();
+        for(int j =0; j<count; j++) {
+            row.append(".");
+        }
+        return row.toString();
+    }
+
     @Test
     public void test8queens() {
-        List<List<Position>> result = eightQueens(8);
+        List<List<String>> result = nQueens(5);
         System.out.println("Count of functioncalls -> " + noOfFunctionCalls);
         System.out.println("Count of Solutions -> " + numOfSolutions);
         result.stream().forEach(lst -> {
-            System.out.print("\n sol : ");
-            lst.stream().forEach( e -> System.out.print("("+ e.x+","+e.y+") " ));
+            System.out.println("\n sol : ");
+            lst.stream().forEach( System.out::println);
         });
         //System.out.println(result);
     }

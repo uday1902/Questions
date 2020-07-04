@@ -10,8 +10,8 @@ public class TestCompletableFuture {
     public static void main(String[] args){
 
         MyTask task1 = new MyTask(5);
-        MyTask task2 = new MyTask(5);
-        MyTask task3 = new MyTask(5);
+        MyTask task2 = new MyTask(11);
+        MyTask task3 = new MyTask(3);
         MyTask task4 = new MyTask(5);
         List<MyTask> tasks = new ArrayList<>();
         tasks.add(task1);
